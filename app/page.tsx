@@ -1,103 +1,197 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { getPropertyStats } from '../lib/api'
+import type { Metadata } from 'next'
 
-export default function Home() {
+// RENDERING STRATEGY: SSG (Static Site Generation)
+// This page is generated at BUILD TIME and served as static HTML
+// Perfect for landing pages that don't change often
+// Benefits: Fastest loading, best SEO, cached by CDN
+
+export const metadata: Metadata = {
+  title: 'UK Rental Properties | Find Your Perfect Home',
+  description:
+    'Discover rental properties across Manchester, Birmingham, Nottingham, and Leeds. From studios to family homes, find your perfect rental property.',
+  keywords: [
+    'rental properties',
+    'UK rentals',
+    'Manchester',
+    'Birmingham',
+    'Nottingham',
+    'Leeds',
+    'apartments',
+    'houses',
+  ],
+  openGraph: {
+    title: 'UK Rental Properties | Find Your Perfect Home',
+    description:
+      'Discover rental properties across Manchester, Birmingham, Nottingham, and Leeds.',
+    type: 'website',
+    url: 'https://your-domain.com',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'UK Rental Properties | Find Your Perfect Home',
+    description:
+      'Discover rental properties across Manchester, Birmingham, Nottingham, and Leeds.',
+  },
+}
+
+// This runs at BUILD TIME (not on each request)
+export default async function Home() {
+  // This API call happens during the build process
+  const stats = await getPropertyStats()
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className='min-h-screen bg-white'>
+      {/* Header */}
+      <header className='bg-blue-600 text-white'>
+        <div className='max-w-6xl mx-auto px-4 py-6'>
+          <h1 className='text-3xl font-bold'>UK Rental Properties</h1>
+          <nav className='mt-4'>
+            <ul className='flex space-x-6'>
+              <li>
+                <Link href='/' className='hover:underline'>
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link href='/listings' className='hover:underline'>
+                  Browse Properties
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </div>
+      </header>
+
+      {/* Hero Section */}
+      <main className='max-w-6xl mx-auto px-4 py-8'>
+        <section className='text-center mb-12'>
+          <h2 className='text-4xl font-bold text-gray-900 mb-4'>
+            Find Your Perfect Rental Property
+          </h2>
+          <p className='text-xl text-gray-600 mb-8'>
+            Discover quality rental properties across the UK&apos;s major cities
+          </p>
+
+          {/* Quick Stats - This data was fetched at BUILD TIME */}
+          <div className='bg-gray-50 rounded-lg p-6 mb-8'>
+            <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+              <div>
+                <div className='text-2xl font-bold text-blue-600'>
+                  {stats.totalProperties}
+                </div>
+                <div className='text-sm text-gray-600'>
+                  Properties Available
+                </div>
+              </div>
+              <div>
+                <div className='text-2xl font-bold text-blue-600'>
+                  {stats.cities.length}
+                </div>
+                <div className='text-sm text-gray-600'>Cities Covered</div>
+              </div>
+              <div>
+                <div className='text-2xl font-bold text-blue-600'>
+                  £{stats.averagePrice}
+                </div>
+                <div className='text-sm text-gray-600'>
+                  Average Monthly Rent
+                </div>
+              </div>
+              <div>
+                <div className='text-2xl font-bold text-blue-600'>
+                  £{stats.priceRange.min}-{stats.priceRange.max}
+                </div>
+                <div className='text-sm text-gray-600'>Price Range</div>
+              </div>
+            </div>
+          </div>
+
+          <Link
+            href='/listings'
+            className='inline-block bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-colors'
+          >
+            Browse All Properties
+          </Link>
+        </section>
+
+        {/* Featured Cities */}
+        <section className='mb-12'>
+          <h3 className='text-2xl font-bold text-gray-900 mb-6 text-center'>
+            Popular Cities
+          </h3>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+            {stats.cities.map((city) => (
+              <Link
+                key={city}
+                href={`/listings?city=${city.toLowerCase()}`}
+                className='block bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow'
+              >
+                <h4 className='text-lg font-semibold text-gray-900 mb-2'>
+                  {city}
+                </h4>
+                <p className='text-gray-600'>Explore properties in {city}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* SEO Content */}
+        <section className='prose max-w-none'>
+          <h3 className='text-2xl font-bold text-gray-900 mb-4'>
+            Why Choose Our Rental Properties?
+          </h3>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+            <div>
+              <h4 className='text-lg font-semibold mb-2'>Quality Assured</h4>
+              <p className='text-gray-600 mb-4'>
+                All our rental properties are carefully vetted to ensure they
+                meet high standards of quality and safety.
+              </p>
+
+              <h4 className='text-lg font-semibold mb-2'>Prime Locations</h4>
+              <p className='text-gray-600'>
+                From Manchester&apos;s vibrant city centre to Birmingham&apos;s
+                historic quarters, find properties in the UK&apos;s most
+                desirable locations.
+              </p>
+            </div>
+            <div>
+              <h4 className='text-lg font-semibold mb-2'>
+                Transparent Pricing
+              </h4>
+              <p className='text-gray-600 mb-4'>
+                No hidden fees or surprises. All rental prices are clearly
+                displayed with full details of what&apos;s included.
+              </p>
+
+              <h4 className='text-lg font-semibold mb-2'>Easy Search</h4>
+              <p className='text-gray-600'>
+                Filter by city, bedrooms, bathrooms, and price to find exactly
+                what you&apos;re looking for.
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* Footer */}
+      <footer className='bg-gray-800 text-white mt-16'>
+        <div className='max-w-6xl mx-auto px-4 py-8'>
+          <div className='text-center'>
+            <p>
+              &copy; 2024 UK Rental Properties. This is a demo for learning
+              Next.js rendering strategies.
+            </p>
+            <p className='mt-2 text-sm text-gray-400'>
+              <strong>Rendering Strategy:</strong> This page uses SSG (Static
+              Site Generation) - built at build time for maximum performance and
+              SEO.
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
 }
